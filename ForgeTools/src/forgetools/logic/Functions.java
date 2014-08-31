@@ -7,7 +7,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -78,11 +77,6 @@ public final class Functions {
         return total;
     }
 
-    public static interface WorldDropsVisitor {
-        void visit(ICommandSender sender, EntityPlayerMP player, boolean playerInWorld, boolean kill, boolean killall,
-                   boolean details, int worldItemCount, int itemsDeleted, WorldServer s);
-    }
-
 
     public static LagData countLag(Integer dim) {
         MinecraftServer server = ForgeTools.server;
@@ -126,23 +120,7 @@ public final class Functions {
         return (double)sum / (double)size;
     }
 
-    public static class LagData {
-        public final double tickMS;
-        public final double tickPct;
-        public final double tps;
-        public final Integer dim;
-        public final String dimName;
-
-        public LagData(double tickMS, double tickPct, double tps, int dim, String dimName) {
-            this.tickMS = tickMS;
-            this.tickPct = tickPct;
-            this.tps = tps;
-            this.dim = dim;
-            this.dimName = dimName;
-        }
-    }
-
-    public static int countLoadedChunks(ICommandSender sender, EntityPlayerMP player, 
+    public static int countLoadedChunks(ICommandSender sender, EntityPlayerMP player,
                                         boolean details, LoadedChunksVisitor visitor) {
         MinecraftServer server = ForgeTools.server;
         int total = 0;
@@ -166,8 +144,5 @@ public final class Functions {
         }
         return total;
     }
-    
-    public static interface LoadedChunksVisitor {
-        void visit(ICommandSender sender, EntityPlayerMP player, boolean details, boolean playerInWorld, WorldServer s, int chunkSize);
-    }
+
 }

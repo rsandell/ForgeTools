@@ -3,6 +3,7 @@ package forgetools.commands;
 import cpw.mods.fml.common.FMLCommonHandler;
 import forgetools.ForgeTools;
 import forgetools.logic.Functions;
+import forgetools.logic.WorldDropsVisitor;
 import forgetools.util.ItemChunkRef;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
@@ -76,7 +77,7 @@ public class DropsCommand extends ForgeToolsGenericCommand {
             // Clear the old counts and set the new check time
             items.clear();
             lastCheck = new Date();
-            total = Functions.countDrops(sender, player, items, details, kill, killall, radius, new Functions.WorldDropsVisitor() {
+            total = Functions.countDrops(sender, player, items, details, kill, killall, radius, new WorldDropsVisitor() {
                 @Override
                 public void visit(ICommandSender sender, EntityPlayerMP player, boolean playerInWorld,
                                   boolean kill, boolean killall, boolean details, int worldItemCount, int itemsDeleted,

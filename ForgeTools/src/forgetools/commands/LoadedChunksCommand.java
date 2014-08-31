@@ -1,28 +1,13 @@
 package forgetools.commands;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.Sets;
-
 import forgetools.logic.Functions;
-import net.minecraft.command.CommandBase;
+import forgetools.logic.LoadedChunksVisitor;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import cpw.mods.fml.common.FMLCommonHandler;
-import forgetools.ForgeTools;
 
 public class LoadedChunksCommand extends ForgeToolsGenericCommand
 {
@@ -52,7 +37,7 @@ public class LoadedChunksCommand extends ForgeToolsGenericCommand
 			if (args[0].equalsIgnoreCase("detail") || args[0].equalsIgnoreCase("d")) details = true;
 		else throw new WrongUsageException(getCommandUsage(sender));
 
-        int total = Functions.countLoadedChunks(sender, player, details, new Functions.LoadedChunksVisitor() {
+        int total = Functions.countLoadedChunks(sender, player, details, new LoadedChunksVisitor() {
             @Override
             public void visit(ICommandSender sender, EntityPlayerMP player, boolean details, boolean playerInWorld, WorldServer s, int chunkSize) {
                 String prefix = (playerInWorld) ? "\u00a72" :  "" ;

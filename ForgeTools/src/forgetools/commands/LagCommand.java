@@ -3,13 +3,12 @@ package forgetools.commands;
 import cpw.mods.fml.common.FMLCommonHandler;
 import forgetools.ForgeTools;
 import forgetools.logic.Functions;
+import forgetools.logic.LagData;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatMessageComponent;
-
-import java.util.Hashtable;
 
 public class LagCommand extends ForgeToolsGenericCommand {
     public LagCommand(String cmds) {
@@ -63,21 +62,21 @@ public class LagCommand extends ForgeToolsGenericCommand {
                 sender.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a74" + dim + " is not a valid dimension id"));
                 return;
             }
-            Functions.LagData data = Functions.countLag(dimension);
+            LagData data = Functions.countLag(dimension);
 
             sender.sendChatToPlayer(ChatMessageComponent.createFromText(textColor(data.tps) + dimName
                     + " tick: "
                     + data.tps + " tps (" + data.tickMS + "ms, " + data.tickPct + "%)"));
         } else if (details) {
-            Functions.LagData[] data = Functions.countLag();
-            for (Functions.LagData d : data) {
+            LagData[] data = Functions.countLag();
+            for (LagData d : data) {
                 sender.sendChatToPlayer(ChatMessageComponent.createFromText(textColor(d.tps) + d.dimName
                         + " tick: "
                         + d.tps + " tps (" + d.tickMS + "ms, " + d.tickPct + "%)"));
             }
 
         } else {
-            Functions.LagData data = Functions.countLag(null, null, server.tickTimeArray);
+            LagData data = Functions.countLag(null, null, server.tickTimeArray);
             sender.sendChatToPlayer(ChatMessageComponent.createFromText(textColor(data.tps)
                     + "Tick: "
                     + data.tps + " tps (" + data.tickMS + "ms, " + data.tickPct + "%)"));
