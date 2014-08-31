@@ -28,7 +28,7 @@ import forgetools.commands.MobsCommand;
 import forgetools.commands.SmiteCommand;
 
 
-@Mod(modid="ForgeTools_1_0", name="Forge Tools", version="1.0")
+@Mod(modid="ForgeToolsToGraphite", name="Forge Tools To Graphite", version="1.0")
 @NetworkMod(clientSideRequired=false, serverSideRequired=false)
 
 public class ForgeTools

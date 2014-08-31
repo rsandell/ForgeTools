@@ -157,4 +157,6 @@ public class InventoryCommand extends ForgeToolsGenericCommand
 	{
 		return hasOpPermissions(sender);
 	}
+
+
 }

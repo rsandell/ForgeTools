@@ -6,6 +6,7 @@ import java.util.List;
 import forgetools.ForgeTools;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;

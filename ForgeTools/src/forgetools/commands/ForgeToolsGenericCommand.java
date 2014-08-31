@@ -6,6 +6,7 @@ import java.util.List;
 import forgetools.ForgeTools;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -68,4 +69,13 @@ public abstract class ForgeToolsGenericCommand extends CommandBase {
 			return true;
 		return false;
 	}
+
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof ICommand) {
+            return getCommandName().compareTo(((ICommand)o).getCommandName());
+        } else {
+            return 0;
+        }
+    }
 }

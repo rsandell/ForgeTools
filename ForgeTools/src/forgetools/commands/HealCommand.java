@@ -134,6 +134,8 @@ public class HealCommand extends ForgeToolsGenericCommand
 	{
 		return hasOpPermissions(sender);
 	}
+
+
 	
 
 }

@@ -1,0 +1,16 @@
+[
+{
+  "modid": "ForgeToolsToGraphite",
+  "name": "ForgeTools to Graphite",
+  "description": "Sends statistics about your minecraft world to Graphite",
+  "version": "${1.0}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["tahosa", "duke_bobby"],
+  "credits": "The Forge and FML guys, for making this example",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
