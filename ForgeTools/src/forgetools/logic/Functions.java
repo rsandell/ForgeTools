@@ -1,18 +1,25 @@
 package forgetools.logic;
 
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Sets;
 import forgetools.ForgeTools;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.ForgeChunkManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Description
@@ -133,5 +140,34 @@ public final class Functions {
             this.dim = dim;
             this.dimName = dimName;
         }
+    }
+
+    public static int countLoadedChunks(ICommandSender sender, EntityPlayerMP player, 
+                                        boolean details, LoadedChunksVisitor visitor) {
+        MinecraftServer server = ForgeTools.server;
+        int total = 0;
+        for(WorldServer s : server.worldServers)
+        {
+            World tmp = ((World) s);
+            ImmutableSetMultimap<ChunkCoordIntPair, ForgeChunkManager.Ticket> forcedChunks = tmp.getPersistentChunks();
+            Set loadedChunks = new LinkedHashSet<ChunkCoordIntPair>();
+            for(ChunkCoordIntPair c : forcedChunks.keys())
+            {
+                for(ForgeChunkManager.Ticket t : forcedChunks.get(c))
+                {
+                    loadedChunks = Sets.union(t.getChunkList(), loadedChunks);
+                }
+            }
+            total += loadedChunks.size();
+
+            boolean playerInWorld = (player != null) ? s.getWorldInfo().equals(player.worldObj.getWorldInfo()) : false;
+            visitor.visit(sender, player, details, playerInWorld, s, loadedChunks.size());
+
+        }
+        return total;
+    }
+    
+    public static interface LoadedChunksVisitor {
+        void visit(ICommandSender sender, EntityPlayerMP player, boolean details, boolean playerInWorld, WorldServer s, int chunkSize);
     }
 }
