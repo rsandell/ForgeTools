@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import forgetools.logic.MobType;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
@@ -50,7 +51,7 @@ public class MobsCommand extends ForgeToolsGenericCommand
 		MinecraftServer server = ForgeTools.server;
 		int amtHos = 0, amtPas = 0, amtNPC = 0;
 		boolean details = false, kill= false, force = false;
-		String type = "";
+		MobType type = MobType.none;
 		float radius = ForgeTools.killRadius;
 		
 		if (args.length > 4) throw new WrongUsageException(getCommandUsage(sender));
@@ -70,13 +71,13 @@ public class MobsCommand extends ForgeToolsGenericCommand
 			if(args[1].equalsIgnoreCase("force") || args[1].equalsIgnoreCase("f"))
 				force = true;
 			else if(args[1].equalsIgnoreCase("passive"))
-				type = "passive";
+				type = MobType.passive;
 			else if(args[1].equalsIgnoreCase("hostile"))
-				type = "hostile";
+				type = MobType.hostile;
 			else if(args[1].equalsIgnoreCase("npc"))
-				type = "npc";
+				type = MobType.npc;
 			else if(args[1].equalsIgnoreCase("all"))
-				type = "all";
+				type = MobType.all;
 			else throw new WrongUsageException(getCommandUsage(sender));
 		}
 		if(args.length >= 3)
@@ -131,7 +132,7 @@ public class MobsCommand extends ForgeToolsGenericCommand
 					
 					if(m instanceof EntityMob)
 					{
-						if(kill && (type.equals("hostile") || type.equals("all")) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius))
+						if(kill && type.is(MobType.hostile) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius))
 						{
 							((EntityLiving) m).setDead();
 							amtRemoved++;
@@ -139,9 +140,9 @@ public class MobsCommand extends ForgeToolsGenericCommand
 						else
 							amtHos++;
 					}
-					else if((m instanceof IAnimals) && !(s.loadedEntityList.get(id) instanceof INpc))
+					else if((m instanceof IAnimals) && !(m instanceof INpc))
 					{
-						if(kill && (type.equals("passive") || type.equals("all")) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius))
+						if(kill && type.is(MobType.passive) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius))
 						{
 							((EntityLiving) m).setDead();
 							amtRemoved++;
@@ -151,7 +152,7 @@ public class MobsCommand extends ForgeToolsGenericCommand
 					}
 					else if(m instanceof INpc)
 					{
-						if(kill && (type.equals("npc") || type.equals("all")) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius))
+						if(kill && (type.is(MobType.npc)) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius))
 						{
 							((EntityLiving) m).setDead();
 							amtRemoved++;
