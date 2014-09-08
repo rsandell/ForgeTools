@@ -50,8 +50,9 @@ public class ForgeTools
 	public static Configuration config;
 	public static float killRadius;
 	public static int timeout;
-	
-	@EventHandler
+    private static GraphiteConfig graphiteConfig;
+
+    @EventHandler
 	public void Init(FMLInitializationEvent event)
 	{
 	}
@@ -88,7 +89,7 @@ public class ForgeTools
 			manager.registerCommand(new MobsCommand(commandsToLoad.get(mobsDName)));
 		if(commandsToLoad.containsKey(smiteDName))
 			manager.registerCommand(new SmiteCommand(commandsToLoad.get(smiteDName)));
-		
+		graphiteConfig.setDefaultPrefix(config, server);
 		System.out.println("ForgeTools: Registered " + commandsToLoad.keySet().size() + " commands");
 		System.out.println("ForgeTools: Registered " + advancedUsers.size() + " advanced users");
 	}
@@ -125,6 +126,8 @@ public class ForgeTools
 			if(cmd.wasRead() && !cmd.getString().isEmpty())
 				commandsToLoad.put(cmd.getName(), cmd.getString());
 		}
+
+        graphiteConfig = new GraphiteConfig(config);
 		
 		config.save();
 	}
