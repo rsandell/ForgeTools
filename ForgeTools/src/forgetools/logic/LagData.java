@@ -12,7 +12,7 @@ public class LagData {
     public final Integer dim;
     public final String dimName;
 
-    public LagData(double tickMS, double tickPct, double tps, int dim, String dimName) {
+    public LagData(double tickMS, double tickPct, double tps, Integer dim, String dimName) {
         this.tickMS = tickMS;
         this.tickPct = tickPct;
         this.tps = tps;
