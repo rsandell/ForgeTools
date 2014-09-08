@@ -4,7 +4,11 @@ import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Sets;
 import forgetools.ForgeTools;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.INpc;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -141,6 +145,60 @@ public final class Functions {
             boolean playerInWorld = (player != null) ? s.getWorldInfo().equals(player.worldObj.getWorldInfo()) : false;
             visitor.visit(sender, player, details, playerInWorld, s, loadedChunks.size());
 
+        }
+        return total;
+    }
+
+    public static MobData calcMobs(ICommandSender sender, EntityPlayerMP player, boolean details, boolean kill, MobType type, float radius, HashMap<Chunk, Integer> mobs, WorldMobsVisitor visitor) {
+        MobData total = new MobData();
+
+        for (WorldServer s : ForgeTools.server.worldServers) {
+            MobData worldData = new MobData();
+            boolean playerInWorld = (player != null) ? s.getWorldInfo().equals(player.worldObj.getWorldInfo()) : false;
+
+            for (int id = 0; id < s.loadedEntityList.size(); id++) {
+                Object m = s.loadedEntityList.get(id);
+                Chunk c;
+
+                if (m instanceof EntityLiving) {
+                    c = s.getChunkFromChunkCoords(((EntityLiving)m).chunkCoordX, ((EntityLiving)m).chunkCoordY);
+                    if (!c.isChunkLoaded)
+                        continue;
+                } else
+                    continue;
+
+                if (m instanceof EntityMob) {
+                    if (kill && type.is(MobType.hostile) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius)) {
+                        ((EntityLiving)m).setDead();
+                        worldData.incAmtRemoved();
+                    } else
+                        worldData.incAmtHos();
+                } else if ((m instanceof IAnimals) && !(m instanceof INpc)) {
+                    if (kill && type.is(MobType.passive) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius)) {
+                        ((EntityLiving)m).setDead();
+                        worldData.incAmtRemoved();
+                    } else
+                        worldData.incAmtPas();
+                } else if (m instanceof INpc) {
+                    if (kill && (type.is(MobType.npc)) && (player == null || ((EntityLiving)m).getDistanceToEntity(player) <= radius)) {
+                        ((EntityLiving)m).setDead();
+                        worldData.incAmtRemoved();
+                    } else
+                        worldData.incAmtNPC();
+                }
+
+                if (!kill) {
+                    if (mobs.get(c) == null) {
+                        mobs.put(c, 1);
+                    } else {
+                        mobs.put(c, mobs.get(c) + 1);
+                    }
+                }
+            }
+
+            visitor.visit(sender, playerInWorld, worldData, s, details, kill, type);
+
+            total.incTotal(worldData);
         }
         return total;
     }
