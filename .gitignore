@@ -2,3 +2,8 @@
 /bin
 ./build
 ./eclipse
+.gradle
+eclipse/
+*.iml
+*.ipr
+*.iws
