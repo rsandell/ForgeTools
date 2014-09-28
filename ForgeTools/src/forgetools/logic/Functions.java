@@ -58,7 +58,7 @@ public final class Functions {
 
                     ++worldItemCount;
 
-                    if (( (kill || killall) && sender != null && sender.getCommandSenderName().equals("Server")) ||    // Console is sending the command, so no player is needed
+                    if (((kill || killall) && sender != null && sender.getCommandSenderName().equals("Server")) ||    // Console is sending the command, so no player is needed
                             (playerInWorld && (killall || (kill && e.getDistanceToEntity(player) <= radius))))        // Player wants to kill items around them
                     {
                         e.setDead();
@@ -128,15 +128,12 @@ public final class Functions {
                                         boolean details, LoadedChunksVisitor visitor) {
         MinecraftServer server = ForgeTools.server;
         int total = 0;
-        for(WorldServer s : server.worldServers)
-        {
-            World tmp = ((World) s);
+        for (WorldServer s : server.worldServers) {
+            World tmp = ((World)s);
             ImmutableSetMultimap<ChunkCoordIntPair, ForgeChunkManager.Ticket> forcedChunks = tmp.getPersistentChunks();
             Set loadedChunks = new LinkedHashSet<ChunkCoordIntPair>();
-            for(ChunkCoordIntPair c : forcedChunks.keys())
-            {
-                for(ForgeChunkManager.Ticket t : forcedChunks.get(c))
-                {
+            for (ChunkCoordIntPair c : forcedChunks.keys()) {
+                for (ForgeChunkManager.Ticket t : forcedChunks.get(c)) {
                     loadedChunks = Sets.union(t.getChunkList(), loadedChunks);
                 }
             }

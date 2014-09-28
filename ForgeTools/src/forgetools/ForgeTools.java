@@ -1,11 +1,17 @@
 package forgetools;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import forgetools.probes.PlayerTracker;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.Configuration;
@@ -30,7 +36,6 @@ import forgetools.commands.SmiteCommand;
 
 @Mod(modid="ForgeToolsToGraphite", name="Forge Tools To Graphite", version="1.0")
 @NetworkMod(clientSideRequired=false, serverSideRequired=false)
-
 public class ForgeTools
 {
 	private static final String dropsDName = "drops";
@@ -50,7 +55,8 @@ public class ForgeTools
 	public static Configuration config;
 	public static float killRadius;
 	public static int timeout;
-    private static GraphiteConfig graphiteConfig;
+    private static boolean serverStarted = false;
+    private static ScheduledExecutorService graphiteExecutor;
 
     @EventHandler
 	public void Init(FMLInitializationEvent event)
@@ -64,6 +70,12 @@ public class ForgeTools
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		reloadConfig();
 	}
+
+    @EventHandler
+    public void init(FMLInitializationEvent event)
+    {
+        GameRegistry.registerPlayerTracker(new PlayerTracker());
+    }
 	
 	@EventHandler
 	public void serverStarting(FMLServerStartingEvent event)
@@ -89,9 +101,15 @@ public class ForgeTools
 			manager.registerCommand(new MobsCommand(commandsToLoad.get(mobsDName)));
 		if(commandsToLoad.containsKey(smiteDName))
 			manager.registerCommand(new SmiteCommand(commandsToLoad.get(smiteDName)));
-		graphiteConfig.setDefaultPrefix(config, server);
+		boolean changed = GraphiteConfig.getInstance().setDefaultPrefix(config, server);
+        changed = changed || GraphiteConfig.getInstance().setDefaultEventTags(config, server);
+        if (changed) {
+            config.save();
+        }
 		System.out.println("ForgeTools: Registered " + commandsToLoad.keySet().size() + " commands");
 		System.out.println("ForgeTools: Registered " + advancedUsers.size() + " advanced users");
+        serverStarted = true;
+        setupGraphiteLogging();
 	}
 	
 	public static void reloadConfig()
@@ -121,18 +139,40 @@ public class ForgeTools
 		cmdData.add(config.get("commands", mobsDName, "mobs"));
 		cmdData.add(config.get("commands", smiteDName, "smite"));
 		
-		for(Property cmd : cmdData)
-		{
+		for(Property cmd : cmdData) {
 			if(cmd.wasRead() && !cmd.getString().isEmpty())
 				commandsToLoad.put(cmd.getName(), cmd.getString());
 		}
 
-        graphiteConfig = new GraphiteConfig(config);
+        GraphiteConfig.configure(config);
 		
 		config.save();
+        setupGraphiteLogging();
 	}
-	
-	public static void saveConfigUpdates()
+
+    private static void setupGraphiteLogging() {
+        if(serverStarted) {
+            if (graphiteExecutor != null) {
+                graphiteExecutor.shutdownNow();
+                graphiteExecutor = null;
+            }
+            if (GraphiteConfig.getInstance().isEnabled()) {
+                graphiteExecutor = Executors.newScheduledThreadPool(1);
+                for(GraphiteConfig.Metric m : GraphiteConfig.Metric.values()) {
+                    if (m.isEnabled()) {
+                        try {
+                            graphiteExecutor.scheduleAtFixedRate(m.newProbe(), 0, GraphiteConfig.getInstance().getInterval(), TimeUnit.SECONDS);
+                        } catch (Exception e) {
+                            System.err.println("Could not start the Graphite probe of " + m.name());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void saveConfigUpdates()
 	{
 		String users = "";
 		for(String s : advancedUsers)
