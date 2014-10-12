@@ -47,8 +47,9 @@ public final class Functions {
                 continue;
 
             // Count entities
-            for (int id = 0; id < s.loadedEntityList.size(); ++id) {
-                Object t = s.loadedEntityList.get(id);
+            List loadedEntityList = new ArrayList(s.loadedEntityList);
+            for (int id = 0; id < loadedEntityList.size(); ++id) {
+                Object t = loadedEntityList.get(id);
                 if (t instanceof EntityItem) {
                     EntityItem e = (EntityItem)t;
 
@@ -153,8 +154,9 @@ public final class Functions {
             MobData worldData = new MobData();
             boolean playerInWorld = (player != null) ? s.getWorldInfo().equals(player.worldObj.getWorldInfo()) : false;
 
-            for (int id = 0; id < s.loadedEntityList.size(); id++) {
-                Object m = s.loadedEntityList.get(id);
+            List loadedEntityList = new ArrayList(s.loadedEntityList);
+            for (int id = 0; id < loadedEntityList.size(); id++) {
+                Object m = loadedEntityList.get(id);
                 Chunk c;
 
                 if (m instanceof EntityLiving) {

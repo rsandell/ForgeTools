@@ -1,5 +1,6 @@
 package net.joinedminds.mc.forgetools.probes;
 
+import net.joinedminds.mc.forgetools.ForgeTools;
 import net.joinedminds.mc.forgetools.Graphite;
 import net.joinedminds.mc.forgetools.GraphiteConfig;
 import net.joinedminds.mc.forgetools.logic.Functions;
